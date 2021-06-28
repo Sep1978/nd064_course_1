@@ -1,15 +1,31 @@
-package main
+from flask import Flask
+from flask import json
 
-import (
-    "fmt"
-    "net/http"
-)
+app = Flask(__name__)
 
-func helloWorld(w http.ResponseWriter, r *http.Request){
-    fmt.Fprintf(w, "Hello World")
-}
+@app.route('/status')
+def status():
+    response = app.response_class(
+            response=json.dumps({"result":"OK - healthy"}),
+            status=200,
+            mimetype='application/json'
+    )
 
-func main() {
-    http.HandleFunc("/", helloWorld)
-    http.ListenAndServe(":6111", nil)
-}
+    return response
+
+@app.route('/metrics')
+def metrics():
+    response = app.response_class(
+            response=json.dumps({"status":"success","code":0,"data":{"UserCount":140,"UserCountActive":23}}),
+            status=200,
+            mimetype='application/json'
+    )
+
+    return response
+
+@app.route("/")
+def hello():
+    return "Hello World!"
+
+if __name__ == "__main__":
+    app.run(host='0.0.0.0')
